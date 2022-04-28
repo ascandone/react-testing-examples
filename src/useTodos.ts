@@ -54,7 +54,7 @@ export const useTodos = (id: number) => {
     return () => {
       abortController.abort();
     };
-  }, []);
+  }, [id]);
 
   return asyncData;
 };
