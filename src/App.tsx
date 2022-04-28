@@ -1,9 +1,7 @@
-import { useState } from "react";
+import { Fetcher } from "./Fetcher";
 
 function App() {
-  const [count, setCount] = useState(0);
-
-  return <div>ciao</div>;
+  return <Fetcher id={2} />;
 }
 
 export default App;
