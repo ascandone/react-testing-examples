@@ -2,33 +2,20 @@ import { Fetcher } from "./Fetcher";
 import { act, render } from "@testing-library/react";
 import "@testing-library/jest-dom/extend-expect";
 
-let queue: Array<(value: unknown) => void> = [];
+import { FetchQueue } from "./FetchQueue";
+
+const queue = new FetchQueue();
+
 beforeAll(() => {
   // @ts-ignore
-  global.fetch = jest.fn(async () => ({
-    json() {
-      return new Promise((res) => {
-        queue.push(res);
-      });
-    },
-  }));
+  global.fetch = jest.fn(queue.getMockFetch);
+});
+
+beforeEach(() => {
+  queue.reset();
 });
 
 const delay = () => act(async () => {});
-
-beforeEach(() => {
-  queue = [];
-});
-
-function* shift() {
-  for (;;) {
-    const callback = queue.shift();
-    if (callback === undefined) {
-      throw new Error("Empty queue");
-    }
-    yield callback;
-  }
-}
 
 test("Should display loading screen as long as long as fetch does not return data", async () => {
   const component = render(<Fetcher id={0} />);
@@ -44,9 +31,11 @@ test("Should display error screen when data is invalid", async () => {
   const component = render(<Fetcher id={0} />);
   await null;
 
-  const [c1] = shift();
+  const [req1] = queue.shift();
 
-  c1({
+  expect(req1.url).toBe("https://jsonplaceholder.typicode.com/todos/0");
+
+  req1.resolve({
     error: "invalid schema",
   });
 
@@ -61,9 +50,9 @@ test("Should display data when fetch is ok", async () => {
   const component = render(<Fetcher id={0} />);
   await null;
 
-  const [c1] = shift();
+  const [req1] = queue.shift();
 
-  c1({
+  req1.resolve({
     userId: 42,
     id: 0,
     title: "Item title",
@@ -84,9 +73,9 @@ test("When props re-renders, should not generate race conditions", async () => {
 
   await null;
 
-  const [c1, _, c2] = shift();
+  const [req1, _, req3] = queue.shift();
 
-  c2({
+  req3.resolve({
     userId: 42,
     id: 0,
     title: "Second item",
@@ -95,7 +84,7 @@ test("When props re-renders, should not generate race conditions", async () => {
 
   await delay();
 
-  c1({
+  req1.resolve({
     userId: 42,
     id: 1,
     title: "First item",
