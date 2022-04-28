@@ -11,7 +11,8 @@ Formato
 Punti di interesse del testing in generale
 ------------------------------------------
 
-- Coverage
+- Coverage 100%: come e perché raggiungerla
+- TDD
 
 Punti di interesse del testing BE
 ---------------------------------
