@@ -1,5 +1,5 @@
 import { Counter } from "./Counter";
-import { cleanup, fireEvent, render } from "@testing-library/react";
+import { fireEvent, render } from "@testing-library/react";
 
 test("Increment", () => {
   const component = render(<Counter />);

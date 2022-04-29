@@ -1,6 +1,6 @@
 import { Btn } from "./Button";
 
-import { cleanup, fireEvent, render } from "@testing-library/react";
+import { fireEvent, render } from "@testing-library/react";
 
 test("Should call onClick handler when clicked", () => {
   const callback = jest.fn();

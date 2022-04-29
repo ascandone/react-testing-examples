@@ -42,6 +42,7 @@ test("Should display error screen when data is invalid", async () => {
   await delay();
 
   expect(component.getByTestId("error-view")).toBeVisible();
+  expect(component.getByTestId("error-view")).toHaveTextContent(/ERROR:/);
 
   component.unmount();
 });
